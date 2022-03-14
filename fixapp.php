@@ -116,8 +116,8 @@ if (isset($_POST['song'])) {
         'seed_artist' => $_POST['artist'],
         'seed_genre' => $_POST['genre'],
         'seed_tracks' => $_POST['song'],
-        'max_instrumentalness' => $_POST['inst'],
-        'max_danceability' => $_POST['dance'],
+        'target_instrumentalness' => $_POST['inst'],
+        'target_danceability' => $_POST['dance'],
         'min_duration_ms' => $_POST['time']
     ]);
 
