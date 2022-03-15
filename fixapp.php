@@ -11,7 +11,7 @@
     </div>
     <form method="post">
         <p>1) What's your favorite song?</p>
-       <input type="text" name="song" placeholder="song" autocomplete="off"><br>
+        <input type="text" name="song" placeholder="song" autocomplete="off"><br>
         <p>2) Who's your favorite artist?</p>
         <input type="text" name="artist" placeholder="artist" autocomplete="off"> <br>
         <p>3) What's your favorite genre?</p>
@@ -27,8 +27,6 @@
 </div>
 </body>
 </html>
-
-
 <?php
 
 
@@ -41,75 +39,21 @@ if (isset($_POST['song'])) {
 
     include(__DIR__ . '/src/SpotifyWebAPI.php');
     require 'vendor/autoload.php';
-    /*
-    require_once('path.inc');
-    require_once('get_host_info.inc');
-    require_once('rabbitMQLib.inc');
-    use PhpAmqpLib\Connection\AMQPStreamConnection;
-    use PhpAmqpLib\Message\AMQPMessage;
 
-    $connection = new AMQPStreamConnection('localhost', 5672, 'guest', 'guest');
-    $channel = $connection->channel();
-
-    $channel->queue_declare('hello', false, false, false, false);
-
-    $msg = new AMQPMessage('Hello World!');
-    $channel->basic_publish($msg, '', 'hello');
-
-    echo " [x] Sent 'Hello World!'\n";
-
-    $channel->close();
-    $connection->close();
-    */
     session_start();
     $api = new SpotifyWebAPI\SpotifyWebAPI();
 
 // Fetch the saved access token from somewhere. A session for example.
     $api->setAccessToken($_SESSION['access']);
-
-//pretty print for account data to access for php scripting (use when programming)
-    /*
-    echo "<h3>" . "Data Dump of Auth Token" . "</h3>";
-    echo "________________________________________________________________________";
-    echo "<pre>";
-    print_r(
-        $api->me()
-    );
-    echo "</pre>";
-    */
-
-
-//format for getting things from the php array ex: this gets the userid of the authenticated user.
-    $me = $api->me();
-    $userid = $me->id;
-    echo "<h3>" . "The Users ID is " . "$userid" . "</h3>";
-    $playlists = $api->getUserPlaylists($userid, [
-        'limit' => 5
-    ]);
-    /*
-    foreach ($playlists->items as $playlist) {
-        echo '<a href="' . $playlist->external_urls->spotify . '">' . $playlist->name . '</a> <br>';
-    }
-    echo "________________________________________________________________________";
-    echo "<br><br><br><br>";
-    */
-
+//this creates the playlist we will then populate
     $playlist = $api->createPlaylist([
-        'name' => '20q20songs Inputted 20 Song'
+        'name' => '20q20songs Inputted 20 Song 3/14/22'
     ]);
     echo "created Playlist Named" . $playlist->name;
-
     $playlistid = $playlist->id;
-//format for getting things from the php array ex: this gets the userid of the authenticated user.
-    echo "<h3>" . "The playlist ID is " . "$playlistid" . "</h3>";
-
-    /*echo "Pretty Print of the playlist info:" . "<pre>";
-    print_r($playlists);
-    echo "</pre>";
-    */
-
     $options = [];
     echo "Recommendations for song:";
+    //this gets a reccomendations object that is NOT in the playlist yet. it's its own separate thing.
     $play = $api->getRecommendations([
         'limit' => '19', //Starts counting at 0
         'market' => 'ES',
@@ -120,19 +64,13 @@ if (isset($_POST['song'])) {
         'target_danceability' => $_POST['dance'],
         'min_duration_ms' => $_POST['time']
     ]);
-
-    /*
-    echo "<pre>";
-    print_r($play);
-    echo "</pre>";
-    */
-//$adding = $api -> addPlaylistTracks($playlistid, ['3qQVUOHJdgIFWJd0jrG9GE', '3qQVUOHJdgIFWJd0jrG9GE']);
+    //this prints the array of reccomendations
     echo "<pre>";
     print_r(
         $play
     );
     echo "</pre>";
-
+    //this goes through the reccomendations, finds each song, and adds them to the prior created playlist's tracks
     foreach ($play as $container) {
         foreach ($container as $object => $value) {
             echo $value->id . "\n";
@@ -140,4 +78,3 @@ if (isset($_POST['song'])) {
         }
     }
 }
-print_r("\n\n 20q20songs playlist gen success");
